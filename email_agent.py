@@ -15,6 +15,15 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 
 RECIPEINT_LIST = ['allenms886@gmail.com']
 
+def read_recipients_from_file(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            recipients = file.read().split(',')
+
+        return [email.strip() for email in recipients]
+    else:
+        return RECIPEINT_LIST
+
 def get_gmail_credentials():
     # Your OAuth client ID and client secret from the Google API Console
     client_id = '891863790185-ae0vggjp9peq4tsmn6k0o1u868hgogko.apps.googleusercontent.com'
@@ -61,6 +70,7 @@ def gmail_send_message(subject, body, bcc_emails):
 
         message.set_content(body)
 
+        print(', '.join(bcc_emails))
         message['Bcc'] = ', '.join(bcc_emails)
         message["From"] = 'altairhoa@gmail.com'
         message["Subject"] = subject
@@ -129,8 +139,9 @@ if __name__ == "__main__":
     try:
         email_subject = "Quarterly HOA Fee Reminder"
         email_body = "==A gentle reminder==\r\nThe quarterly HOA Fee has been posted in your Buildium account.\r\nBest Regards\r\nAltair HOA"
+        recipient_emails = read_recipients_from_file('recipients.txt')
 
-        gmail_send_message(email_subject, email_body, RECIPEINT_LIST)
+        gmail_send_message(email_subject, email_body, recipient_emails)
         print("Email sent successfully.")
     except KeyboardInterrupt:
         print("Script terminated by user.")
