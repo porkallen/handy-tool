@@ -13,8 +13,6 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-RECIPEINT_LIST = ['allenms886@gmail.com']
-
 def read_recipients_from_file(file_path):
     if os.path.exists(file_path):
         with open(file_path, 'r') as file:
@@ -22,7 +20,7 @@ def read_recipients_from_file(file_path):
 
         return [email.strip() for email in recipients]
     else:
-        return RECIPEINT_LIST
+        raise FileNotFoundError(f"The file {file_path} does not exist, and no default recipients provided.")
 
 def get_gmail_credentials():
     # Your OAuth client ID and client secret from the Google API Console
@@ -70,7 +68,6 @@ def gmail_send_message(subject, body, bcc_emails):
 
         message.set_content(body)
 
-        print(', '.join(bcc_emails))
         message['Bcc'] = ', '.join(bcc_emails)
         message["From"] = 'altairhoa@gmail.com'
         message["Subject"] = subject
